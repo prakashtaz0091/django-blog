@@ -30,7 +30,7 @@
               <p class="mb-4">Lorem ipsum dolor sit amet elit. Sapiente sit aut eos consectetur adipisicing.</p>
               <form action="" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                {{ errors|default:'' }}
+                {{ error|default:'' }}
                 <div class="form-group first">
                   <label for="username">Username</label>
                   <input type="text" class="form-control" minlength="6" placeholder="ram@123" id="username" name="username" required />

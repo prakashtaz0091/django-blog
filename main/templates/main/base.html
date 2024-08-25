@@ -69,7 +69,11 @@
                         <a href="{% url 'signup_page' %}">Sign up</a>
                     </li>
                     <li>
+                        {% if request.user.is_authenticated %}
+                        <a href="{% url 'logout_page' %}">Logout</a>
+                        {% else %}
                         <a href="{% url 'login_page' %}">Login</a>
+                        {% endif %}
                     </li>
                 </ul>
             </div>
