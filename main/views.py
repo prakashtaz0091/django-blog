@@ -3,6 +3,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
+from .models import Profile
+
 
 def home(request):
     return render(request, 'main/home.html')
@@ -37,9 +39,11 @@ def signup_view(request):
                 user = User.objects.create_user(username, password=password, first_name=first_name, last_name=last_name)
 
                 if profile_pic:
-                    print(profile_pic, "*******************")
+                    # print(profile_pic, "*******************")
+                    Profile.objects.create(profile_pic=profile_pic, user=user)
+                
 
-                # user.save()
+
 
                 return redirect('login_page')
 
