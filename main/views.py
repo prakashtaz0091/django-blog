@@ -3,11 +3,56 @@ from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
-from .models import Profile
+from .models import Profile, Post
+from .forms import CreateBlogForm, CategoryForm
+
+
+
+
+# def blog_detail(request, blog_id):
+
+def add_category(request):
+    if request.method == "POST":
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("home_page")
+        else:
+            return render(request, "main/add_category.html", {'form':form})
+    else:
+        form = CategoryForm()
+        return render(request, "main/add_category.html", {'form':form})
+
+
+def create_post(request):
+
+    if request.method == "POST":
+        form = CreateBlogForm(request.POST)
+
+        if form.is_valid():
+            form.save(author = request.user)
+
+            return redirect("home_page")
+        else:
+            return render(request, "main/create_blog.html", {'form':form})
+
+
+    form = CreateBlogForm()
+
+
+    return render(request, 'main/create_blog.html', {'form':form})
 
 
 def home(request):
-    return render(request, 'main/home.html')
+
+    latest_blogs = Post.objects.all().order_by('-created_at')
+
+    context = {
+        'blogs':latest_blogs
+    }
+
+
+    return render(request, 'main/home.html', context)
 
 
 
@@ -57,6 +102,8 @@ def login_view(request):
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
+        remember_me = request.POST.get('remember_me')
+        # print(remember_me,"****************")
 
         # print(username, password)
 
@@ -69,6 +116,8 @@ def login_view(request):
                 return render(request, 'main/login.html', {'error':'Invalid Credentials'})
 
             login(request, user)
+            if remember_me:
+                request.session.set_expiry(7*24*60*60)
 
             return redirect("home_page")
 

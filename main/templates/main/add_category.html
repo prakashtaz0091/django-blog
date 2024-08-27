@@ -1,0 +1,14 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+  Add Category
+{% endblock %}
+
+{% block main_content %}
+  <form action="" method="post">
+    {{ form.errors }}
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit">Add</button>
+  </form>
+{% endblock %}

@@ -11,4 +11,8 @@ urlpatterns = [
 
     
     path('', views.home, name="home_page"),
+    path('blog/create/', views.create_post, name="create_post_page"),
+    # path('blog/<int:blog_id>/', views.add_category, name="blog_detail_page"),
+    path('blog/category/add/', views.add_category, name="add_category_page"),
+    
 ]
