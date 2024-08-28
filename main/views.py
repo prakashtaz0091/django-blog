@@ -3,13 +3,90 @@ from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
-from .models import Profile, Post
-from .forms import CreateBlogForm, CategoryForm
+from .models import Profile, Post, Likes
+from .forms import CreateBlogForm, CategoryForm, CommentForm
+from django.core.paginator import Paginator
+from django.views.decorators.http import require_POST, require_GET
+from django.contrib.auth.decorators import login_required
+from django.db import IntegrityError
+
+@require_GET
+@login_required
+def add_like(request, blog_id):
+    # blog_id = request.GET.get('blog_id')
+    print(blog_id)
+    try:
+        blog = Post.objects.get(id=blog_id)
+    except Post.DoesNotExist:
+        return redirect("home_page")
+    else:
+
+        try:
+            like = Likes.objects.get(user=request.user, post=blog)
+            like.delete()
+            return redirect("blog_detail_page", blog_id=blog_id)
+        except Likes.DoesNotExist:
+            Likes.objects.create(user=request.user, post=blog)
+            return redirect("blog_detail_page", blog_id=blog_id)
+    
+
+     
+
+      
+        
+
+
+
+@require_POST
+@login_required
+def add_comment(request):
+    blog_id = request.POST.get('blog_id')
+    try:
+        blog = Post.objects.get(id=blog_id)
+    except Post.DoesNotExist:
+        return redirect("home_page")
+    else:
+        form_data = CommentForm(request.POST)
+
+        if form_data.is_valid():
+            form_data.save(commenter = request.user, post = blog)
+
+            return redirect("blog_detail_page",blog_id=blog_id)   
+        else:
+            comments = blog.comments.all()
+            context = {
+                'blog':blog,
+                'comment_form':form_data,
+                'comments':comments
+            }
+
+            return render(request, 'main/blog_detail.html', context)
+
+        
 
 
 
 
-# def blog_detail(request, blog_id):
+def blog_detail(request, blog_id):
+
+    # print(blog_id)
+    try:
+        blog = Post.objects.get(id=blog_id)
+    except Post.DoesNotExist:
+        return redirect("home_page")
+    else:
+        
+        comments = blog.comments.all()
+        likes = blog.likes.count
+        context = {
+            'blog':blog,
+            'comment_form':CommentForm(),
+            'comments':comments,
+            'likes':likes
+        }
+
+        return render(request, 'main/blog_detail.html', context)
+
 
 def add_category(request):
     if request.method == "POST":
@@ -46,9 +123,13 @@ def create_post(request):
 def home(request):
 
     latest_blogs = Post.objects.all().order_by('-created_at')
+    paginator = Paginator(latest_blogs, 2)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     context = {
-        'blogs':latest_blogs
+        # 'blogs':latest_blogs
+        'page_obj': page_obj
     }
 
 

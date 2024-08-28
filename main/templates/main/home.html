@@ -10,15 +10,16 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-        {% for blog in blogs %}
+        {% for blog in page_obj.object_list %}
           <div class="post-preview">
             {% comment %} <a href="{% url 'blog_detail_page' blog.id %}"> {% endcomment %}
-            <a href="">
+            <a href="{% url 'blog_detail_page' blog.id %}">
               <h2 class="post-title">{{ blog.title }}</h2>
-              <h3 class="post-subtitle">{{ blog.content|truncatechars:100 }}</h3>
+              <h3 class="post-subtitle">{{ blog.content|truncatechars:100|safe }}</h3>
             </a>
             <p class="post-meta">
-              Posted by <a href="#">{{ blog.author }}</a> on {{ blog.created_at }}
+              Posted by <a href="#">{{ blog.author }}</a> on {{ blog.created_at }} |
+              {{ blog.likes.count }} likes | {{ blog.comments.count }} comments
             </p>
           </div>
           <hr />
@@ -26,9 +27,18 @@
 
         <!-- Pager -->
         <ul class="pager">
-          <li class="next">
-            <a href="#">Older Posts &rarr;</a>
-          </li>
+          
+          {% if page_obj.has_next %}
+              <li class="next">
+                <a href="?page={{ page_obj.next_page_number }}">Older Posts &rarr;</a>
+              </li>
+          {% endif %}
+          {% if page_obj.has_previous %}
+              <li class="next">
+                <a href="?page={{ page_obj.previous_page_number }}">Newest Posts &larr;</a>
+              </li>
+          {% endif %}
+          
         </ul>
       </div>
     </div>

@@ -1,0 +1,58 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+  Blog Detail
+{% endblock %}
+
+{% block main_content %}
+  <!-- Post Content -->
+  <article>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+          <h2 class="section-heading">{{ blog.title }}</h2>
+
+          <p>{{ blog.content|safe }}</p>
+
+          <hr />
+          <div class="" style="display: flex; justify-content: space-between;">
+            <div class="post-meta" style="font-size: 1.2rem;">
+              Posted by <a href="#">{{ blog.author }}</a> on {{ blog.created_at }}
+            </div>
+            <div>
+              Liked by {{ likes|default:0 }}
+
+              <a href="{% url 'add_like' blog.id %}">Like</a>
+            </div>
+          </div>
+          <hr />
+          <section>
+            <h5>Comments</h5>
+
+            <form action="{% url 'add_comment' %}" method="post">
+              {% csrf_token %}
+
+              <input type="hidden" name="blog_id" value="{{ blog.id }}" />
+
+              {{ comment_form }}
+              <button type="submit">Comment</button>
+            </form>
+
+            <hr />
+            {% for comment in comments %}
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">{{ comment.author.first_name|default:comment.author.username }}</h5>
+                  <p class="card-text">{{ comment.content }}</p>
+                  {% comment %} <a href="#" class="btn btn-primary">Button</a> {% endcomment %}
+                  <small>{{ comment.created_at }}</small>
+                </div>
+              </div>
+              <hr />
+            {% endfor %}
+          </section>
+        </div>
+      </div>
+    </div>
+  </article>
+{% endblock %}
