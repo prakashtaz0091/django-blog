@@ -1,21 +1,21 @@
 
 
 from pathlib import Path
-
+from dotenv import load_dotenv
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
+load_dotenv()  # Load the .env file
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-q&il3al7ib_c7@rrju40kq^_rq7d89jg-=d59-myk(5$%ef-j0'
+
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -66,9 +66,17 @@ WSGI_APPLICATION = 'blog_project.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'prakashtaz0091$prakashtaz0091',  # Replace with your database name
+        'USER': os.getenv('DB_USERNAME'),  # Use environment variable for username
+        'PASSWORD': os.getenv('DB_PASSWORD'),  # Use environment variable for password
+        'HOST': os.getenv('DB_HOST'),  # Use environment variable for host
+        'PORT': '3306',  # Default MySQL port
     }
 }
 
